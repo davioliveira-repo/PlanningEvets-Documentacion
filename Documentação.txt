@@ -1,0 +1,182 @@
+📚 Manual de Documentação: Gestão de Eventos
+Este manual documenta a lógica de dois projetos de gestão de eventos: um aplicativo desktop desenvolvido em Python (Tkinter) e um aplicativo web simples usando HTML, CSS e JavaScript. Ambos compartilham a mesma estrutura de dados para o gerenciamento de eventos e participantes.
+
+1. Projeto Python (Desktop) 🖥️
+O projeto Python (planning_events.py) implementa um aplicativo desktop usando a biblioteca Tkinter para a interface gráfica. Ele utiliza um arquivo JSON (events.json) para persistir os dados dos eventos.
+
+1.1. Arquivos e Estrutura de Dados
+O aplicativo se baseia em dois arquivos principais e um dicionário global:
+
+events.json: O arquivo de persistência. Armazena a lista de eventos e o próximo ID disponível.
+
+planning_events.py: Contém toda a lógica da aplicação (carregamento/salvamento, interface, CRUD de eventos/participantes).
+
+Variáveis Globais Chave:
+
+eventos: Dicionário que mantém o estado atual de todos os eventos.
+
+ID_CONTADOR: Variável inteira que armazena o próximo ID a ser usado para um novo evento, garantindo unicidade.
+
+1.2. Persistência de Dados (JSON)
+As funções de carregamento e salvamento manipulam o arquivo events.json.
+
+Carregamento (load_events):
+
+Verifica se o arquivo events.json existe. Se não, inicializa eventos como vazio e ID_CONTADOR como 1.
+
+Se o arquivo existe, carrega o JSON, converte as chaves de evento para inteiros e atualiza o ID_CONTADOR com o valor de next_id ou calcula o próximo ID se next_id estiver faltando.
+
+Python
+
+def load_events():
+    global eventos, ID_CONTADOR
+    # ... (código de verificação)
+    try:
+        # ...
+        eventos = {int(k): v for k, v in payload.get("eventos", {}).items()}
+        # ...
+    # ...
+Salvamento (save_events):
+
+Antes de salvar, as chaves do dicionário eventos são convertidas de volta para strings, pois chaves de objetos JSON devem ser strings.
+
+O dicionário de eventos e o ID_CONTADOR (como next_id) são encapsulados no payload e escritos no arquivo.
+
+Python
+
+def save_events():
+    try:
+        payload = {"eventos": {str(k): v for k, v in eventos.items()}, "next_id": ID_CONTADOR}
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False, indent=2)
+    # ...
+1.3. Lógica da Interface (Tkinter)
+A interface principal exibe os eventos em um widget ttk.Treeview.
+
+Visualização (atualizar_treeview):
+
+Limpa todas as linhas do Treeview.
+
+Itera sobre o dicionário eventos (ordenado por ID), inserindo cada evento como uma nova linha.
+
+A coluna "Inscritos" é preenchida com o comprimento da lista inscricoes do evento.
+
+Adicionar Evento (abrir_adicionar_evento):
+
+Cria uma janela de nível superior (tk.Toplevel).
+
+Na função salvar, valida campos obrigatórios, cria o novo evento com uma lista inscricoes vazia, atribui o ID_CONTADOR atual, incrementa o contador, salva e atualiza a view.
+
+Python
+
+def salvar():
+    global ID_CONTADOR
+    # ... (validação e coleta de dados)
+    novo = {"nome": nome, "data": data, "local": local, "telefone": tel, "inscricoes": []}
+    eventos[ID_CONTADOR] = novo
+    ID_CONTADOR += 1
+    save_events()
+    # ...
+Inscrever Participante (abrir_inscrever_participante):
+
+Requer que um evento seja selecionado no Treeview.
+
+O novo dicionário de participante é anexado à lista inscricoes do evento selecionado.
+
+Remover Participante (abrir_remover_participante):
+
+Exibe os inscritos em um tk.Listbox.
+
+A remoção é feita pelo índice selecionado no Listbox usando list.pop(idx).
+
+Python
+
+def remover_selecionado():
+    # ...
+    idx = sel[0]
+    # ... (confirmação)
+    dados["inscricoes"].pop(idx) # Remoção pelo índice
+    save_events()
+    # ...
+Remover Evento (remover_evento):
+
+Requer um evento selecionado.
+
+Usa a operação del eventos[id_evento] para remover o par chave/valor do dicionário eventos.
+
+2. Projeto Web (HTML/CSS/JS) 🌐
+O projeto web utiliza HTML, CSS e JavaScript e o armazenamento local do navegador (localStorage) para persistência de dados.
+
+2.1. Persistência de Dados (localStorage)
+O JavaScript usa JSON.stringify() para salvar e JSON.parse() para carregar os dados.
+
+Carregamento (loadEvents):
+
+Busca a string JSON sob a chave DATA_KEY no localStorage.
+
+Converte as chaves de evento de strings para inteiros ao popular o objeto eventos global.
+
+JavaScript
+
+function loadEvents() {
+    // ...
+    if (storedData) {
+        const payload = JSON.parse(storedData);
+        eventos = Object.keys(payload.eventos || {}).reduce((acc, key) => {
+            acc[parseInt(key)] = payload.eventos[key]; // Conversão para Int
+            return acc;
+        }, {});
+        // ...
+    }
+    // ...
+}
+Salvamento (saveEvents):
+
+Salva o objeto eventos e o ID_CONTADOR no localStorage após serializar o payload com JSON.stringify().
+
+2.2. Lógica da Interface (DOM/JS)
+A manipulação da interface é feita via Dicionário de Objetos do Documento (DOM).
+
+Seleção de Evento:
+
+A variável global eventoSelecionadoID rastreia o ID do evento clicado na tabela.
+
+A função selecionarLinha atualiza essa variável e aplica a classe CSS .selected à linha correspondente.
+
+Visualização (atualizarTabelaEventos):
+
+Limpa o corpo da tabela (tbody).
+
+Cria dinamicamente novos elementos <tr> e <td> com base nos dados.
+
+O número de inscritos é preenchido com dados.inscricoes.length.
+
+Remover Participante (removerParticipante):
+
+A remoção é acionada por um botão no modal "Consultar Inscritos".
+
+Utiliza o método Array.splice(index, 1) do JavaScript para remover o item da lista inscricoes pelo índice passado como parâmetro.
+
+JavaScript
+
+function removerParticipante(index) {
+    // ... (confirmação)
+    evento.inscricoes.splice(index, 1); // Remoção pelo índice
+    saveEvents();
+    // ...
+}
+Remover Evento (removerEventoSelecionado):
+
+Utiliza a instrução delete eventos[eventoSelecionadoID] do JavaScript para remover a propriedade (evento) do objeto global eventos.
+
+JavaScript
+
+function removerEventoSelecionado() {
+    // ... (confirmação)
+    delete eventos[eventoSelecionadoID];
+    eventoSelecionadoID = null;
+    saveEvents();
+    // ...
+}
+3. Considerações Finais
+Ambos os projetos implementam a mesma lógica central de gestão de eventos (CRUD), diferenciando-se apenas na tecnologia de interface (Tkinter vs. HTML/CSS/JS) e no mecanismo de persistência de dados (arquivo JSON no desktop vs. localStorage no navegador). A consistência na estrutura de dados (eventos como dicionário de ID -> evento, com inscricoes como lista de dicionários) é a chave para o funcionamento de ambos os sistemas.
