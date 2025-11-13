@@ -1,7 +1,8 @@
-📚 Manual de Documentação: Gestão de Eventos
+Manual de Documentação: Gestão de Eventos
+
 Este manual documenta a lógica de dois projetos de gestão de eventos: um aplicativo desktop desenvolvido em Python (Tkinter) e um aplicativo web simples usando HTML, CSS e JavaScript. Ambos compartilham a mesma estrutura de dados para o gerenciamento de eventos e participantes.
 
-1. Projeto Python (Desktop) 🖥️
+1. Projeto Python (Desktop)
 O projeto Python (planning_events.py) implementa um aplicativo desktop usando a biblioteca Tkinter para a interface gráfica. Ele utiliza um arquivo JSON (events.json) para persistir os dados dos eventos.
 
 1.1. Arquivos e Estrutura de Dados
@@ -104,7 +105,7 @@ Requer um evento selecionado.
 
 Usa a operação del eventos[id_evento] para remover o par chave/valor do dicionário eventos.
 
-2. Projeto Web (HTML/CSS/JS) 🌐
+2. Projeto Web (HTML/CSS/JS)
 O projeto web utiliza HTML, CSS e JavaScript e o armazenamento local do navegador (localStorage) para persistência de dados.
 
 2.1. Persistência de Dados (localStorage)
