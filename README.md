@@ -1,5 +1,5 @@
-# PlanningEvets-Documentacion
- Documentação do Site e do Programa "Planning Events"
+# SysEvent-Documentacion
+ Documentação do Site e do Programa "SysEvent"
 
 Grupo:
 - Davi Oliveira de Sá
